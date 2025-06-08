@@ -1,4 +1,3 @@
-
 resource "kubernetes_service" "kafka_service" {
   metadata {
     name = "kafka-service"
@@ -13,17 +12,17 @@ resource "kubernetes_service" "kafka_service" {
     }
 
     port {
-      name       = "kafka-port1"
-      port       = 9092
+      name        = "kafka-port1"
+      port        = 9092
       target_port = 9092
-      protocol   = "TCP"
+      protocol    = "TCP"
     }
 
     port {
-      name       = "kafka-port2"
-      port       = 9093
+      name        = "kafka-port2"
+      port        = 9093
       target_port = 9093
-      protocol   = "TCP"
+      protocol    = "TCP"
     }
   }
 }
@@ -57,10 +56,23 @@ resource "kubernetes_stateful_set" "kafka" {
       }
 
       spec {
+
         container {
-          name  = "kafka"
-          image = "docker.io/confluentinc/confluent-local:latest"
+          name              = "kafka"
+          image             = "docker.io/confluentinc/confluent-local:latest"
           image_pull_policy = "IfNotPresent"
+
+          lifecycle {
+            post_start {
+              exec {
+                command = [
+                  "sh",
+                  "-c",
+                  "kafka-topics --create --topic greetings --partitions 10 --bootstrap-server localhost:9092 || true"
+                ]
+              }
+            }
+          }
 
           port {
             container_port = 29092
@@ -92,7 +104,7 @@ resource "kubernetes_stateful_set" "kafka" {
             value = "ODhCODhFMjEyNDZCNEI0ME"
           }
           env {
-            name = "POD_NAME"
+            name  = "POD_NAME"
             value = "kafka-$(ORDINAL_NUMBER)"
           }
           env {
@@ -101,7 +113,7 @@ resource "kubernetes_stateful_set" "kafka" {
           }
 
           env {
-            name = "KAFKA_CONTROLLER_QUORUM_VOTERS"
+            name  = "KAFKA_CONTROLLER_QUORUM_VOTERS"
             value = "$(ORDINAL_NUMBER)@$(POD_NAME).kafka-service.default.svc.cluster.local:29092"
           }
           # env {
