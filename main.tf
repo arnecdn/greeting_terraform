@@ -27,9 +27,7 @@ resource "kubernetes_service" "kafka_service" {
   }
 }
 
-variable "ORDINAL_NUMBER" {
-  default = ""
-}
+
 resource "kubernetes_stateful_set" "kafka" {
   metadata {
     name = "kafka"
