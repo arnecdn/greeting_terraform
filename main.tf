@@ -1,3 +1,7 @@
+variable "replicas" {
+  default = 1
+}
+
 resource "kubernetes_service" "kafka_service" {
   metadata {
     name = "kafka-service"
@@ -27,7 +31,6 @@ resource "kubernetes_service" "kafka_service" {
   }
 }
 
-
 resource "kubernetes_stateful_set" "kafka" {
   metadata {
     name = "kafka"
@@ -38,7 +41,7 @@ resource "kubernetes_stateful_set" "kafka" {
 
   spec {
     service_name = "kafka-service"
-    replicas     = 1
+    replicas     = var.replicas
 
     selector {
       match_labels = {
@@ -54,7 +57,6 @@ resource "kubernetes_stateful_set" "kafka" {
       }
 
       spec {
-
         container {
           name              = "kafka"
           image             = "docker.io/confluentinc/confluent-local:latest"
@@ -97,14 +99,17 @@ resource "kubernetes_stateful_set" "kafka" {
             name  = "KAFKA_NODE_ID"
             value = "$(ORDINAL_NUMBER)"
           }
+
           env {
             name  = "CLUSTER_ID"
             value = "ODhCODhFMjEyNDZCNEI0ME"
           }
+
           env {
             name  = "POD_NAME"
             value = "kafka-$(ORDINAL_NUMBER)"
           }
+
           env {
             name  = "KAFKA_LISTENERS"
             value = "CONTROLLER://:29092,PLAINTEXT://:9092,PLAINTEXT_HOST://:9093"
@@ -112,12 +117,8 @@ resource "kubernetes_stateful_set" "kafka" {
 
           env {
             name  = "KAFKA_CONTROLLER_QUORUM_VOTERS"
-            value = "$(ORDINAL_NUMBER)@$(POD_NAME).kafka-service.default.svc.cluster.local:29092"
+            value = local.kafka_voters
           }
-          # env {
-          #   name  = "KAFKA_CONTROLLER_QUORUM_VOTERS"
-          #   value = "0@kafka-0.kafka-service.default.svc.cluster.local:29092"
-          # }
 
           env {
             name  = "KAFKA_ADVERTISED_LISTENERS"
@@ -126,10 +127,27 @@ resource "kubernetes_stateful_set" "kafka" {
 
           env {
             name  = "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR"
-            value = "1"
+            value = tostring(var.replicas)
           }
         }
       }
     }
   }
+}
+
+resource "kubernetes_config_map" "KAFKA_CONTROLLER_QUORUM_VOTERS" {
+  metadata {
+    name      = "kafka-controller-quorum-voters"
+    namespace = "default"
+  }
+
+  data = {
+    kafka_voters = local.kafka_voters
+  }
+}
+
+locals {
+  kafka_voters = join(",", [
+    for i in range(var.replicas) : "${i}@kafka-${i}.kafka-service.default.svc.cluster.local:29092"
+  ])
 }
