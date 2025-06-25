@@ -25,7 +25,7 @@ provider "kubernetes" {
 }
 
 module "kafka" {
-  source   = "./modules/kafka"
+  source         = "./modules/kafka"
   kafka_replicas = var.kafka_cluster_replicas
 }
 

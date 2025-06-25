@@ -5,6 +5,8 @@ locals {
 }
 
 resource "kubernetes_service" "kafka_service" {
+  #checkov:skip=CKV_K8S_44:Dont need to check if service is deleted.
+  #checkov:skip=CKV_K8S_21:This is a custom Kafka setup, so we skip default namespace checks.
   metadata {
     name = "kafka-service"
     labels = {
@@ -34,6 +36,7 @@ resource "kubernetes_service" "kafka_service" {
 }
 
 resource "kubernetes_stateful_set" "kafka" {
+  #checkov:skip=CKV_K8S_21:This is a custom Kafka setup, so we skip default namespace checks.
   metadata {
     name = "kafka"
     labels = {

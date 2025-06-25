@@ -6,14 +6,15 @@ install:
 	brew install $(BREW_PACKAGES)
 
 .PHONY: chores
-chores: format document
+chores: documentation format
 
-.PHONY: format
-format: terraform fmt
-
-.PHONY: document
-document:
+.PHONY: documentation
+documentation:
 	terraform-docs -c .terraform-docs.yml .
+
+.PHONY: test_documentation
+test_documentation:
+	terraform-docs -c .terraform-docs.yml --output-check .
 
 .PHONY: format
 format:
@@ -31,3 +32,10 @@ terraform_test:
 test_tflint:
 	tflint --init
 	tflint
+
+.PHONY: security
+security: test_checkov
+
+.PHONY: test_checkov
+test_checkov:
+	checkov --directory .
