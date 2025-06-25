@@ -1,3 +1,9 @@
+locals {
+  kafka_voters = join(",", [
+    for i in range(var.kafka_replicas) : "${i}@kafka-${i}.kafka-service.default.svc.cluster.local:29092"
+  ])
+}
+
 resource "kubernetes_service" "kafka_service" {
   metadata {
     name = "kafka-service"
@@ -37,7 +43,7 @@ resource "kubernetes_stateful_set" "kafka" {
 
   spec {
     service_name = "kafka-service"
-    replicas     = var.replicas
+    replicas     = var.kafka_replicas
 
     selector {
       match_labels = {
@@ -123,27 +129,10 @@ resource "kubernetes_stateful_set" "kafka" {
 
           env {
             name  = "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR"
-            value = tostring(var.replicas)
+            value = tostring(var.kafka_replicas)
           }
         }
       }
     }
   }
-}
-
-# resource "kubernetes_config_map" "KAFKA_CONTROLLER_QUORUM_VOTERS" {
-#   metadata {
-#     name      = "kafka-controller-quorum-voters"
-#     namespace = "default"
-#   }
-#
-#   data = {
-#     kafka_voters = local.kafka_voters
-#   }
-# }
-
-locals {
-  kafka_voters = join(",", [
-    for i in range(var.replicas) : "${i}@kafka-${i}.kafka-service.default.svc.cluster.local:29092"
-  ])
 }
