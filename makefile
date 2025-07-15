@@ -28,6 +28,11 @@ terratest:
 terraform_test:
 	@echo "Not yet implemented."
 
+.PHONY: tflint_fix
+tflint_fix:
+	tflint --init
+	tflint --fix
+
 .PHONY: test_tflint
 test_tflint:
 	tflint --init

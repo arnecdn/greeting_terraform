@@ -1,4 +1,6 @@
-The README.md file for the Kafka module in Terraform.
+The README.md file for setting up Kubernetes with the nescessary 
+Greeting infrastructure.
+
 
 # Kafka Module
 This Terraform module deploys a Kafka cluster on Kubernetes. It allows you to configure the number of replicas and provides outputs for the service and statefulset names.
