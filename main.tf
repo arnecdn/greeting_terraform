@@ -24,8 +24,7 @@ provider "kubernetes" {
   config_context = var.kube_config_context
 }
 
-module "kafka" {
-  source         = "./modules/kafka"
-  kafka_replicas = var.kafka_cluster_replicas
+module "postgres" {
+  source = "./modules/postgres"
 }
 
