@@ -28,6 +28,10 @@ resource "kubernetes_deployment" "postgres_greeting" {
           port {
             container_port = 5432
           }
+          volume_mount {
+            name       = "postgres-data"
+            mount_path = "/var/lib/postgresql/data"
+          }
 
           env {
             name = "POSTGRES_DB"
@@ -59,6 +63,12 @@ resource "kubernetes_deployment" "postgres_greeting" {
             }
           }
         }
+        volume {
+          name = "postgres-data"
+          persistent_volume_claim {
+            claim_name = kubernetes_persistent_volume_claim.postgres_greeting_pvc.metadata[0].name
+          }
+        }
       }
     }
   }
@@ -77,6 +87,23 @@ resource "kubernetes_service" "postgres_greeting" {
     port {
       port        = 5432
       target_port = 5432
+    }
+  }
+}
+
+resource "kubernetes_persistent_volume_claim" "postgres_greeting_pvc" {
+  metadata {
+    name = "postgres-greeting-pvc"
+    labels = {
+      app = "postgres-greeting"
+    }
+  }
+  spec {
+    access_modes = ["ReadWriteOnce"]
+    resources {
+      requests = {
+        storage = "5Gi"
+      }
     }
   }
 }
