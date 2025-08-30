@@ -2,8 +2,9 @@ The README.md file for setting up Kubernetes with the nescessary
 Greeting infrastructure.
 
 
-# Kafka Module
-This Terraform module deploys a Kafka cluster on Kubernetes. It allows you to configure the number of replicas and provides outputs for the service and statefulset names.
+# Postgres Module
+This Terraform module deploys a Postgres server on Kubernetes. 
+
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -21,7 +22,7 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_kafka"></a> [kafka](#module\_kafka) | ./modules/kafka | n/a |
+| <a name="module_postgres"></a> [postgres](#module\_postgres) | ./modules/postgres | n/a |
 
 ## Resources
 
@@ -31,14 +32,10 @@ No resources.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_kafka_cluster_replicas"></a> [kafka\_cluster\_replicas](#input\_kafka\_cluster\_replicas) | Number of Kafka replicas | `number` | `1` | no |
 | <a name="input_kube_config_context"></a> [kube\_config\_context](#input\_kube\_config\_context) | Kubernetes context to use | `string` | `"minikube"` | no |
 | <a name="input_kube_config_path"></a> [kube\_config\_path](#input\_kube\_config\_path) | Path to the Kubernetes config file | `string` | `"~/.kube/config"` | no |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_kafka_service_name"></a> [kafka\_service\_name](#output\_kafka\_service\_name) | Name of the Kafka service |
-| <a name="output_kafka_statefulset_name"></a> [kafka\_statefulset\_name](#output\_kafka\_statefulset\_name) | Name of the Kafka service |
+No outputs.
 <!-- END_TF_DOCS -->

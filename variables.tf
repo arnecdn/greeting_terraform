@@ -10,9 +10,4 @@ variable "kube_config_context" {
   default     = "minikube"
 }
 
-variable "kafka_cluster_replicas" {
-  description = "Number of Kafka replicas"
-  type        = number
-  default     = 1
-}
 
