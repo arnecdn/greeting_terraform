@@ -23,7 +23,7 @@ resource "kubernetes_deployment" "postgres_greeting" {
       spec {
         container {
           name  = "postgres-greeting"
-          image = "docker.io/arnecdn/greeting-postgres:0.7"
+          image = "docker.io/arnecdn/greeting-postgres:0.14"
 
           # Add to container args:
           args = [
@@ -86,9 +86,6 @@ resource "kubernetes_deployment" "postgres_greeting" {
             name = kubernetes_config_map.postgres_greeting_config.metadata[0].name
           }
         }
-
-
-
       }
     }
   }
@@ -140,14 +137,7 @@ resource "kubernetes_config_map" "postgres_greeting_config" {
     POSTGRES_DB   = var.postgres_db
     POSTGRES_USER = var.postgres_user
     POSTGRES_HOST = var.postgres_db
-    "postgresql.conf" = <<-EOT
-      shared_preload_libraries = 'pg_tracing'
-      compute_query_id = on
-      pg_tracing.max_span = 10000
-      pg_tracing.track = all
-      pg_tracing.otel_endpoint = http://grafana-alloy:4318/v1/traces
-      pg_tracing.otel_naptime = 2000
-    EOT
+    "postgresql.conf" = file("${path.module}/config/postgresql.conf")
   }
 
 }
