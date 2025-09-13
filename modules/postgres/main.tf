@@ -23,7 +23,7 @@ resource "kubernetes_deployment" "postgres_greeting" {
       spec {
         container {
           name  = "postgres-greeting"
-          image = "docker.io/arnecdn/greeting-postgres:0.14"
+          image = "docker.io/arnecdn/greeting-postgres:0.15"
 
           # Add to container args:
           args = [
